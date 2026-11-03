@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Campus-Carriers Collection Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f4f5f8;--card:#fff;--ink:#162036;--mut:#5b6579;--line:#dde1e9;--hd:#14213d;--acc:#9b1c31;--g:#1b7f46;--y:#9a6c00;--r:#b92b3c;--gt:#e3f4ea;--yt:#fcf1d2;--rt:#fbe4e7;--gb:#2e9e5e;--yb:#e0a800;--rb:#c9364a;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1320;--card:#171e2f;--ink:#e8ebf3;--mut:#9aa3b8;--line:#2a3349;--hd:#0a0f1c;--acc:#e0566c;--g:#56c887;--y:#e8b93a;--r:#ee7a89;--gt:#12301f;--yt:#3a2f0c;--rt:#3d1820;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1320;--card:#171e2f;--ink:#e8ebf3;--mut:#9aa3b8;--line:#2a3349;--hd:#0a0f1c;--acc:#e0566c;--g:#56c887;--y:#e8b93a;--r:#ee7a89;--gt:#12301f;--yt:#3a2f0c;--rt:#3d1820;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.45 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+header{background:var(--hd);color:#fff;border-bottom:4px solid var(--acc)}
+.hin{max-width:1280px;margin:auto;padding:14px 16px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between}
+h1{font-size:19px;margin:0;font-weight:600;letter-spacing:.2px}
+h1 small{display:block;font-size:12px;font-weight:400;opacity:.75}
+nav{display:flex;gap:4px}
+nav button{background:none;border:0;color:#fff;opacity:.75;padding:8px 14px;font:inherit;cursor:pointer;border-bottom:2px solid transparent}
+nav button.on{opacity:1;border-color:#fff;font-weight:600}
+.wrap{max-width:1280px;margin:auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:12px}
+.kpi span{display:block;color:var(--mut);font-size:12.5px}
+.kpi b{font-size:24px;font-weight:600}
+.kpi.g b{color:var(--g)}.kpi.r b{color:var(--r)}.kpi.y b{color:var(--y)}
+.big{height:18px;background:var(--line);border-radius:9px;overflow:hidden;margin:8px 0}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:90px}
+.bar i,.big i{display:block;height:100%;transition:width .35s}
+i.g{background:var(--gb)}i.y{background:var(--yb)}i.r{background:var(--rb)}
+.pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill.g{background:var(--gt);color:var(--g)}.pill.y{background:var(--yt);color:var(--y)}.pill.r{background:var(--rt);color:var(--r)}
+.tools,.flt{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin-bottom:10px}
+.flt label,.grid label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px}
+input,select,textarea,button{font:inherit;color:var(--ink)}
+input,select,textarea{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:7px 9px;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible,textarea:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.btn{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:7px 12px;cursor:pointer}
+.btn:hover{border-color:var(--mut)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:500}
+.btn.s{padding:3px 8px;font-size:12px}.btn.d{color:var(--r)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table{border-collapse:collapse;width:100%}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--mut);font-weight:500;white-space:nowrap;background:var(--bg)}
+td.n,th.n{text-align:right;white-space:nowrap}
+#tbl{min-width:1200px}
+small,.mut{color:var(--mut)}
+tfoot td{font-weight:600;background:var(--bg)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;margin-bottom:12px}
+h2{font-size:15px;margin:0 0 10px}
+.ch{position:relative;height:250px}
+dialog{border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);width:min(640px,94vw);padding:18px}
+dialog::backdrop{background:rgba(10,15,28,.55)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:10px 0}
+.grid .w{grid-column:1/-1}
+.err{color:var(--r);min-height:18px;font-size:13px;margin:4px 0}
+.row{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--hd);color:#fff;padding:9px 16px;border-radius:8px;display:none;z-index:9}
+.seg button{border:1px solid var(--line);background:var(--card);padding:5px 12px;cursor:pointer}
+.seg button.on{background:var(--hd);color:#fff}
+@media print{header nav,.noprint,.btn,#toast{display:none!important}section.tab[hidden]{display:block!important}body{background:#fff;color:#000}.card,.tw{break-inside:avoid}}
+</style></head><body>
+<header><div class="hin"><h1>Campus-Carriers<small>Collection Monitoring and Revenue Tracker</small></h1>
+<nav class="noprint"><button data-t="dash" class="on">Dashboard</button><button data-t="rec">Collection Records</button><button data-t="rep">Reports</button></nav></div></header>
+<div class="wrap">
+<section class="tab" id="dash">
+ <div class="kpis" id="kpis"></div>
+ <div class="card"><h2>Overall collection progress</h2><div class="big"><i id="gbar"></i></div><b id="gpct"></b> <small id="gnote"></small></div>
+ <div class="card" style="margin-top:12px"><h2>Overdue and pending collections</h2><div class="tw" style="border:0"><div id="pendD"></div></div></div>
+</section>
+<section class="tab" id="rec" hidden>
+ <div class="tools noprint"><button class="btn p" id="bAdd">Add transaction</button><button class="btn" id="bCsv">Export CSV</button><button class="btn" id="bPrint">Print report</button><button class="btn" id="bBak">Backup (JSON)</button><button class="btn" id="bRes">Restore backup</button><input type="file" id="fRes" accept=".json" hidden></div>
+ <div class="flt noprint" id="flt">
+  <label>Search<input id="q" placeholder="Customer, merchant or ID"></label>
+  <label>Status<select id="fs"><option value="">All</option><option>Pending</option><option>Partially Collected</option><option>Collected</option></select></label>
+  <label>Category<select id="fc"></select></label>
+  <label>Payment method<select id="fm"></select></label>
+  <label>From<input type="date" id="ff"></label><label>To<input type="date" id="ft"></label>
+  <label>Sort by<select id="so"><option value="date">Date</option><option value="amount">Amount</option><option value="status">Status</option></select></label>
+  <button class="btn" id="bDir" title="Toggle sort direction">Newest first</button><button class="btn" id="bClr">Clear</button>
+ </div>
+ <div class="tw"><table id="tbl"><thead><tr><th>ID / Date</th><th>Client</th><th>Description</th><th>Category</th><th class="n">Expected</th><th class="n">Collected</th><th class="n">Balance</th><th>Progress</th><th>Status</th><th>Collection date</th><th>Method</th><th class="noprint">Collected?</th><th class="noprint">Actions</th></tr></thead><tbody id="tb"></tbody><tfoot id="tf"></tfoot></table></div>
+</section>
+<section class="tab" id="rep" hidden>
+ <div class="kpis" id="rk"></div>
+ <div class="two"><div class="card"><h2>Collections by category</h2><div class="ch"><canvas id="chCat"></canvas></div><div class="tw" style="border:0"><div id="tCat"></div></div></div>
+ <div class="card"><h2>Collections by payment method</h2><div class="ch"><canvas id="chMet"></canvas></div><div class="tw" style="border:0"><div id="tMet"></div></div></div></div>
+ <div class="two"><div class="card"><h2>Collection summary</h2><div class="seg noprint" id="seg"><button data-p="day">Daily</button><button data-p="week">Weekly</button><button data-p="month" class="on">Monthly</button></div><div class="ch" style="margin-top:8px"><canvas id="chPer"></canvas></div><div class="tw" style="border:0;max-height:260px;overflow:auto"><div id="tPer"></div></div></div>
+ <div class="card"><h2>Collection trend (cumulative)</h2><div class="ch" style="height:330px"><canvas id="chTr"></canvas></div></div></div>
+ <div class="card"><h2>Overdue and pending collections</h2><div class="tw" style="border:0"><div id="pendR"></div></div></div>
+</section>
+</div>
+
+<dialog id="dTx"><form id="fTx"><h2 id="txT">Add transaction</h2>
+ <div class="grid">
+  <label>Date<input type="date" id="fDate" required></label>
+  <label>Client / customer<input id="fClient" required maxlength="80"></label>
+  <label class="w">Transaction description<input id="fDesc" required maxlength="160"></label>
+  <label>Collection category<select id="fCat"></select></label>
+  <label>Expected amount (₱)<input type="number" id="fExp" min="0.01" step="0.01" required></label>
+  <label>Payment method<select id="fMeth"></select></label>
+  <label>Due date (optional)<input type="date" id="fDue"></label>
+  <label id="initRow">Amount collected now (₱)<input type="number" id="fInit" min="0" step="0.01" value="0"></label>
+  <label class="w">Remarks<textarea id="fRem" rows="2" maxlength="300"></textarea></label>
+ </div><div class="err" id="fErr"></div>
+ <div class="row"><button type="button" class="btn" id="txX">Cancel</button><button class="btn p">Save transaction</button></div></form></dialog>
+<dialog id="dPay"><div id="pBody"></div><div class="row"><button class="btn" id="pX">Close</button></div></dialog>
+<div id="toast" role="status"></div>
+
+<script>
+const K="cc_tracker_v1",CATS=["Delivery Fee","Merchant Share","Service Revenue","Other Income"],METH=["Cash","GCash","Bank Transfer","Other"],PAL=["#3a5a9b","#9b1c31","#1b7f46","#d9a300","#7a5fa6","#8a8fa0"];
+let S={n:0,tx:[]},F={q:"",st:"",cat:"",me:"",from:"",to:"",sort:"date",dir:-1},P="month",tab="dash",editing=null,cur=null,dbRef=null,charts={};
+try{const r=localStorage.getItem(K);if(r)S=JSON.parse(r)}catch(e){}
+const $=s=>document.querySelector(s),sum=(a,f)=>a.reduce((x,y)=>x+f(y),0),r2=x=>Math.round(x*100)/100;
+const fmt=n=>"₱"+Number(n).toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today=()=>new Date().toLocaleDateString("en-CA"),dfm=d=>d?new Date(d+"T00:00").toLocaleDateString("en-PH",{month:"short",day:"numeric",year:"numeric"}):"—";
+const uid=()=>Math.random().toString(36).slice(2,9);
+const paid=t=>r2(sum(t.pays,p=>p.amt)),bal=t=>Math.max(0,r2(t.exp-paid(t)));
+const st=t=>{const p=paid(t);return p<=0?"Pending":p>=t.exp?"Collected":"Partially Collected"};
+const pct=t=>t.exp>0?Math.min(100,paid(t)/t.exp*100):0;
+const lastD=t=>t.pays.map(p=>p.date).sort().pop()||"";
+const late=t=>st(t)!=="Collected"&&t.due&&t.due<today();
+const col=t=>st(t)==="Collected"?"g":(late(t)||st(t)==="Pending")?"r":"y";
+const toast=m=>{const e=$("#toast");e.textContent=m;e.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display="none",3200)};
+async function persist(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}
+ if(dbRef)try{await dbRef.set({json:JSON.stringify(S)})}catch(e){toast("Cloud save failed. Data is saved in this browser only.")}}
+(async()=>{try{const db=await claude.use("db");if(!db)return;dbRef=db.doc("cc/ledger");const s=await dbRef.get();
+ if(s.exists){S=JSON.parse(s.data().json);try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}render()}else if(S.tx.length)persist()}catch(e){}})();
+
+const opts=(a,all)=>(all?`<option value="">${all}</option>`:"")+a.map(x=>`<option>${x}</option>`).join("");
+$("#fc").innerHTML=opts(CATS,"All");$("#fm").innerHTML=opts(METH,"All");$("#fCat").innerHTML=opts(CATS);$("#fMeth").innerHTML=opts(METH);
+
+function kpis(id,mini){const T=S.tx,ex=sum(T,t=>t.exp),co=sum(T,paid),ou=sum(T,bal),rate=ex?co/ex*100:0;
+ $(id).innerHTML=[["Total Expected Collections",fmt(ex)],["Total Collected",fmt(co),"g"],["Total Outstanding Collections",fmt(ou),"r"],["Collection Rate",rate.toFixed(1)+"%"],["Total Transactions",T.length],["Uncollected Transactions",T.filter(t=>st(t)!=="Collected").length,"y"]].map(([l,v,c])=>`<div class="card kpi ${c||""}"><span>${l}</span><b>${v}</b></div>`).join("");
+ if(!mini){const b=$("#gbar");b.style.width=Math.min(100,rate)+"%";b.className=rate>=100?"g":rate>0?"y":"r";$("#gpct").textContent=rate.toFixed(1)+"% of expected collections received";
+  const ov=sum(T,t=>Math.max(0,paid(t)-t.exp));$("#gnote").textContent=ov>0?"Includes "+fmt(ov)+" recorded overpayment.":""}}
+
+function pend(id,lim){const L=S.tx.filter(t=>st(t)!=="Collected").sort((a,b)=>(late(b)-late(a))||((a.due||a.date)>(b.due||b.date)?1:-1)).slice(0,lim||999);
+ $(id).innerHTML=L.length?`<table><thead><tr><th>ID</th><th>Client</th><th>Description</th><th class="n">Balance</th><th>Due</th><th>Status</th></tr></thead><tbody>${L.map(t=>{const d=late(t)?Math.floor((Date.parse(today())-Date.parse(t.due))/864e5):0;return`<tr><td>${t.id}</td><td>${esc(t.client)}</td><td>${esc(t.desc)}</td><td class="n">${fmt(bal(t))}</td><td>${dfm(t.due)}</td><td><span class="pill ${col(t)}">${late(t)?"Overdue "+d+"d":st(t)}</span></td></tr>`}).join("")}</tbody></table>`:'<p class="mut" style="padding:8px">Nothing outstanding. New collections you add will appear here until paid.</p>'}
+
+function rows(){const q=F.q.toLowerCase();
+ const L=S.tx.filter(t=>(!q||(t.client+" "+t.id+" "+t.desc).toLowerCase().includes(q))&&(!F.st||st(t)===F.st)&&(!F.cat||t.cat===F.cat)&&(!F.me||t.method===F.me||t.pays.some(p=>p.method===F.me))&&(!F.from||t.date>=F.from)&&(!F.to||t.date<=F.to));
+ const so={Pending:0,"Partially Collected":1,Collected:2},key={date:t=>t.date+t.id,amount:t=>t.exp,status:t=>so[st(t)]}[F.sort];
+ return L.sort((a,b)=>{const x=key(a),y=key(b);return(x>y?1:x<y?-1:0)*F.dir})}
+function table(){const L=rows();
+ $("#tb").innerHTML=L.length?L.map(t=>{const m=[...new Set(t.pays.map(p=>p.method))].join(", ")||t.method,c=col(t),p=pct(t);
+ return`<tr><td><b>${t.id}</b><br><small>${dfm(t.date)}</small></td><td>${esc(t.client)}</td><td>${esc(t.desc)}${t.rem?`<br><small>${esc(t.rem)}</small>`:""}</td><td>${esc(t.cat)}</td><td class="n">${fmt(t.exp)}</td><td class="n">${fmt(paid(t))}</td><td class="n">${fmt(bal(t))}</td>
+ <td><div class="bar"><i class="${c}" style="width:${p}%"></i></div><small>${p.toFixed(0)}%</small></td><td><span class="pill ${c}">${st(t)}</span>${late(t)?'<br><small style="color:var(--r)">Overdue</small>':""}${paid(t)>t.exp?"<br><small>Overpaid</small>":""}</td><td>${dfm(lastD(t))}</td><td>${esc(m)}</td>
+ <td class="noprint"><input type="checkbox" data-a="tog" data-id="${t.id}" ${st(t)==="Collected"?"checked":""} aria-label="Mark ${t.id} as fully collected"></td>
+ <td class="noprint" style="white-space:nowrap"><button class="btn s" data-a="pay" data-id="${t.id}">Payments (${t.pays.length})</button> <button class="btn s" data-a="edit" data-id="${t.id}">Edit</button> <button class="btn s d" data-a="del" data-id="${t.id}">Delete</button></td></tr>`}).join(""):`<tr><td colspan="13" class="mut" style="padding:20px">${S.tx.length?"No transactions match these filters.":"No transactions yet. Select “Add transaction” to record your first collection."}</td></tr>`;
+ $("#tf").innerHTML=`<tr><td colspan="4">Totals for ${L.length} shown</td><td class="n">${fmt(sum(L,t=>t.exp))}</td><td class="n">${fmt(sum(L,paid))}</td><td class="n">${fmt(sum(L,bal))}</td><td colspan="6"></td></tr>`}
+
+function mk(id,cfg){if(!window.Chart)return;charts[id]?.destroy();cfg.options=Object.assign({responsive:true,maintainAspectRatio:false},cfg.options);charts[id]=new Chart($("#"+id),cfg)}
+const wk=d=>{const x=new Date(d+"T00:00");x.setDate(x.getDate()-((x.getDay()+6)%7));return x.toLocaleDateString("en-CA")};
+function reports(){kpis("#rk",1);
+ if(window.Chart){const cs=getComputedStyle(document.documentElement);Chart.defaults.color=cs.getPropertyValue("--mut");Chart.defaults.borderColor=cs.getPropertyValue("--line")}
+ const T=S.tx,pays=T.flatMap(t=>t.pays.map(p=>({...p,t}))),tbl=(h,r)=>`<table><thead><tr>${h.map((x,i)=>`<th class="${i?"n":""}">${x}</th>`).join("")}</tr></thead><tbody>${r.map(x=>`<tr>${x.map((v,i)=>`<td class="${i?"n":""}">${v}</td>`).join("")}</tr>`).join("")||'<tr><td class="mut">No data yet</td></tr>'}</tbody></table>`;
+ const cat={};T.forEach(t=>{const c=cat[t.cat]??={e:0,c:0,o:0};c.e+=t.exp;c.c+=paid(t);c.o+=bal(t)});
+ $("#tCat").innerHTML=tbl(["Category","Expected","Collected","Outstanding"],Object.entries(cat).map(([k,c])=>[esc(k),fmt(c.e),fmt(c.c),fmt(c.o)]));
+ mk("chCat",{type:"doughnut",data:{labels:Object.keys(cat),datasets:[{data:Object.values(cat).map(c=>c.c),backgroundColor:PAL,borderWidth:0}]},options:{plugins:{legend:{position:"right"}}}});
+ const met={};pays.forEach(p=>{const m=met[p.method]??={n:0,a:0};m.n++;m.a+=p.amt});
+ $("#tMet").innerHTML=tbl(["Method","Payments","Amount"],Object.entries(met).map(([k,m])=>[esc(k),m.n,fmt(m.a)]));
+ mk("chMet",{type:"bar",data:{labels:Object.keys(met),datasets:[{label:"Collected (₱)",data:Object.values(met).map(m=>m.a),backgroundColor:PAL}]},options:{plugins:{legend:{display:false}}}});
+ const kf=P==="day"?d=>d:P==="week"?wk:d=>d.slice(0,7),per={};pays.forEach(p=>{const k=kf(p.date),e=per[k]??={n:0,a:0};e.n++;e.a+=p.amt});
+ const ks=Object.keys(per).sort(),lab=k=>P==="week"?"Week of "+dfm(k):P==="month"?new Date(k+"-01T00:00").toLocaleDateString("en-PH",{month:"long",year:"numeric"}):dfm(k);
+ $("#tPer").innerHTML=tbl(["Period","Payments","Collected"],[...ks].reverse().map(k=>[lab(k),per[k].n,fmt(per[k].a)]));
+ mk("chPer",{type:"bar",data:{labels:ks.slice(-12).map(lab),datasets:[{label:"Collected (₱)",data:ks.slice(-12).map(k=>per[k].a),backgroundColor:"#9b1c31"}]},options:{plugins:{legend:{display:false}}}});
+ const ds=[...new Set([...T.map(t=>t.date),...pays.map(p=>p.date)])].sort();let ce=0,cc=0;
+ const ee=ds.map(d=>ce+=sum(T.filter(t=>t.date===d),t=>t.exp)),cl=ds.map(d=>cc+=sum(pays.filter(p=>p.date===d),p=>p.amt));
+ mk("chTr",{type:"line",data:{labels:ds.map(dfm),datasets:[{label:"Expected",data:ee,borderColor:"#3a5a9b",tension:.2},{label:"Collected",data:cl,borderColor:"#1b7f46",tension:.2}]}});
+ pend("#pendR")}
+
+function render(){kpis("#kpis");pend("#pendD",8);table();if(tab==="rep")reports()}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));document.querySelectorAll("section.tab").forEach(s=>s.hidden=s.id!==tab);render()});
+document.querySelectorAll("#seg button").forEach(b=>b.onclick=()=>{P=b.dataset.p;document.querySelectorAll("#seg button").forEach(x=>x.classList.toggle("on",x===b));reports()});
+
+$("#flt").addEventListener("input",()=>{F={...F,q:$("#q").value,st:$("#fs").value,cat:$("#fc").value,me:$("#fm").value,from:$("#ff").value,to:$("#ft").value,sort:$("#so").value};table()});
+$("#bDir").onclick=()=>{F.dir*=-1;$("#bDir").textContent=F.dir<0?"Highest / newest first":"Lowest / oldest first";table()};
+$("#bClr").onclick=()=>{document.querySelectorAll("#flt input,#flt select").forEach(e=>e.value=e.id==="so"?"date":"");F={q:"",st:"",cat:"",me:"",from:"",to:"",sort:"date",dir:-1};$("#bDir").textContent="Newest first";table()};
+$("#bPrint").onclick=()=>{try{window.print()}catch(e){toast("Printing is unavailable in this view.")}};
+
+function openTx(id){editing=id;const t=S.tx.find(x=>x.id===id);$("#txT").textContent=t?"Edit "+t.id:"Add transaction";$("#fErr").textContent="";$("#initRow").hidden=!!t;
+ const v=(k,x)=>$("#"+k).value=x;v("fDate",t?t.date:today());v("fClient",t?t.client:"");v("fDesc",t?t.desc:"");v("fCat",t?t.cat:CATS[0]);v("fExp",t?t.exp:"");v("fMeth",t?t.method:METH[0]);v("fDue",t?t.due:"");v("fRem",t?t.rem:"");v("fInit",0);$("#dTx").showModal()}
+$("#bAdd").onclick=()=>openTx(null);$("#txX").onclick=()=>$("#dTx").close();
+$("#fTx").onsubmit=e=>{e.preventDefault();const g=i=>$("#"+i).value.trim(),exp=r2(+g("fExp")),ini=r2(+g("fInit")||0),er=m=>{$("#fErr").textContent=m};
+ if(!(exp>0))return er("Expected amount must be greater than zero.");
+ if(ini<0)return er("Amount collected cannot be negative.");
+ if(ini>exp)return er("Amount collected exceeds the expected amount. Save the transaction first, then record an overpayment under Payments.");
+ const d={date:g("fDate"),client:g("fClient"),desc:g("fDesc"),cat:g("fCat"),exp,method:g("fMeth"),due:g("fDue"),rem:g("fRem")};let t=editing&&S.tx.find(x=>x.id===editing);
+ if(t){if(exp<paid(t)&&!confirm("The expected amount is lower than the "+fmt(paid(t))+" already collected. The difference will count as an overpayment. Continue?"))return;Object.assign(t,d)}
+ else{t={id:"CC-"+String(++S.n).padStart(4,"0"),pays:[],...d};if(ini>0)t.pays.push({id:uid(),date:d.date,amt:ini,method:d.method,over:false});S.tx.push(t)}
+ persist();$("#dTx").close();render();toast("Transaction saved.")};
+
+$("#tb").addEventListener("click",e=>{const b=e.target.closest("button[data-a]");if(!b)return;const id=b.dataset.id,t=S.tx.find(x=>x.id===id);
+ if(b.dataset.a==="edit")openTx(id);else if(b.dataset.a==="pay")openPay(id);
+ else if(b.dataset.a==="del"&&confirm("Delete "+id+" ("+t.client+") and its "+t.pays.length+" payment record(s)? This cannot be undone.")){S.tx=S.tx.filter(x=>x!==t);persist();render();toast("Transaction deleted.")}});
+$("#tb").addEventListener("change",e=>{const c=e.target;if(c.dataset.a!=="tog")return;const t=S.tx.find(x=>x.id===c.dataset.id);
+ if(c.checked){if(bal(t)>0)t.pays.push({id:uid(),date:today(),amt:bal(t),method:t.method,over:false})}
+ else if(t.pays.length&&confirm("Mark "+t.id+" as not collected? This removes its "+t.pays.length+" payment record(s).")){t.pays=[]}
+ persist();render()});
+
+function openPay(id){cur=id;const t=S.tx.find(x=>x.id===id);
+ $("#pBody").innerHTML=`<h2>${t.id} · ${esc(t.client)}</h2><p class="mut">Expected ${fmt(t.exp)} · Collected ${fmt(paid(t))} · Balance ${fmt(bal(t))} · <span class="pill ${col(t)}">${st(t)}</span></p>
+ <div class="tw" style="max-height:200px;overflow:auto"><table><thead><tr><th>Date</th><th class="n">Amount</th><th>Method</th><th></th></tr></thead><tbody>${t.pays.slice().sort((a,b)=>a.date>b.date?1:-1).map(p=>`<tr><td>${dfm(p.date)}</td><td class="n">${fmt(p.amt)}${p.over?" <small>(overpayment)</small>":""}</td><td>${esc(p.method)}</td><td><button class="btn s d" data-p="${p.id}">Remove</button></td></tr>`).join("")||'<tr><td colspan="4" class="mut">No payments recorded yet.</td></tr>'}</tbody></table></div>
+ <h2 style="margin-top:14px">Record a payment</h2><div class="grid"><label>Date received<input type="date" id="pD" value="${today()}"></label><label>Amount (₱)<input type="number" id="pA" min="0.01" step="0.01" value="${bal(t)||""}"></label><label>Method<select id="pM">${opts(METH)}</select></label><label style="justify-content:end;flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="pO">Record as overpayment</label></div>
+ <div class="err" id="pErr"></div><button class="btn p" id="pAdd">Add payment</button>`;
+ $("#pM").value=t.method;if(!$("#dPay").open)$("#dPay").showModal()}
+$("#pX").onclick=()=>$("#dPay").close();
+$("#pBody").addEventListener("click",e=>{const t=S.tx.find(x=>x.id===cur),b=e.target.closest("button");if(!b)return;
+ if(b.dataset.p){if(confirm("Remove this payment record?")){t.pays=t.pays.filter(p=>p.id!==b.dataset.p);persist();render();openPay(cur)}}
+ else if(b.id==="pAdd"){const a=r2(+$("#pA").value),d=$("#pD").value,er=m=>$("#pErr").textContent=m,ov=$("#pO").checked;
+  if(!d)return er("Enter the date the payment was received.");
+  if(!(a>0))return er("Payment must be a positive amount. Negative or zero amounts are not allowed.");
+  if(a>bal(t)&&!ov)return er("This exceeds the remaining balance of "+fmt(bal(t))+". Tick “Record as overpayment” to allow it.");
+  t.pays.push({id:uid(),date:d,amt:a,method:$("#pM").value,over:a>bal(t)});persist();render();openPay(cur);toast("Payment recorded.")}});
+
+const csv=a=>"\ufeff"+a.map(r=>r.map(v=>{v=String(v??"");return/[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(",")).join("\r\n");
+async function save(name,data,type){try{const d=await claude.use("downloads");if(d){await d.save({filename:name,data});return}}catch(e){if(e&&e.code==="declined")return}
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click()}
+$("#bCsv").onclick=()=>save("campus-carriers-collections-"+today()+".csv",csv([["Transaction ID","Date","Client","Description","Category","Expected","Collected","Balance","Payment Method","Status","Collection Date","Due Date","Progress %","Remarks","Payment History"],...rows().map(t=>[t.id,t.date,t.client,t.desc,t.cat,t.exp.toFixed(2),paid(t).toFixed(2),bal(t).toFixed(2),t.method,st(t),lastD(t),t.due,pct(t).toFixed(0),t.rem,t.pays.map(p=>p.date+": "+p.amt.toFixed(2)+" "+p.method).join("; ")])]),"text/csv");
+$("#bBak").onclick=()=>save("campus-carriers-backup-"+today()+".json",JSON.stringify(S,null,1),"application/json");
+$("#bRes").onclick=()=>$("#fRes").click();
+$("#fRes").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.tx))throw 0;if(confirm("Replace all current records with this backup ("+d.tx.length+" transactions)?")){S=d;persist();render();toast("Backup restored.")}}catch(x){toast("That file is not a valid backup.")}};r.readAsText(f);e.target.value=""};
+render();
+</script></body></html>
